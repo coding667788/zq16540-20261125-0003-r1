@@ -1,0 +1,33 @@
+{
+  "schema": "crashfence.trace.v1",
+  "name": "success is asserted without a commit marker",
+  "events": [
+    {
+      "op": "grant_owner_token",
+      "token_id": "t1",
+      "token": {
+        "epoch": 1,
+        "coordinator": "obs-a",
+        "lease_id": "l1",
+        "not_before": 0,
+        "expires_at": 100
+      }
+    },
+    {
+      "op": "request_authorization",
+      "proposal_id": "a1",
+      "auth_id": "auth-no"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "a1",
+      "node": "n1",
+      "token": "t1"
+    },
+    {
+      "op": "assert",
+      "authorization_id": "auth-no",
+      "expected_decision": "granted"
+    }
+  ]
+}

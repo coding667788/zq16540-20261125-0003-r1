@@ -1,0 +1,94 @@
+{
+  "schema": "crashfence.scenario.v1",
+  "name": "upstream-bound possession tokens and idempotent receipts",
+  "readers": [
+    {
+      "id": "r-a",
+      "upstream": "up-a"
+    },
+    {
+      "id": "r-b",
+      "upstream": "up-b",
+      "possession_tokens": [
+        "read-good"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "op": "grant_owner_token",
+      "token_id": "t1",
+      "token": {
+        "epoch": 1,
+        "coordinator": "obs-a",
+        "lease_id": "l1",
+        "not_before": 0,
+        "expires_at": 100
+      }
+    },
+    {
+      "op": "request_authorization",
+      "proposal_id": "a1",
+      "auth_id": "auth-read"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "a1",
+      "node": "n1",
+      "token": "t1"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "a1",
+      "node": "n2",
+      "token": "t1"
+    },
+    {
+      "op": "publish_commit_marker",
+      "proposal": "a1",
+      "token": "t1"
+    },
+    {
+      "op": "publish_read_snapshot",
+      "snapshot_id": "snap-a",
+      "upstream": "up-a",
+      "confirmation_token": "read-good"
+    },
+    {
+      "op": "reader_read",
+      "reader": "r-a",
+      "snapshot_id": "snap-a"
+    },
+    {
+      "op": "reader_read",
+      "reader": "r-b",
+      "snapshot_id": "snap-a"
+    },
+    {
+      "op": "grant_read_token",
+      "reader": "r-a",
+      "token": "read-good"
+    },
+    {
+      "op": "reader_read",
+      "reader": "r-a",
+      "snapshot_id": "snap-a"
+    },
+    {
+      "op": "redeem_receipt",
+      "receipt_id": "receipt-7",
+      "authorization_id": "auth-read"
+    },
+    {
+      "op": "redeem_receipt",
+      "receipt_id": "receipt-7",
+      "authorization_id": "auth-read"
+    },
+    {
+      "op": "record_response",
+      "correlation_id": "resp-uncertain",
+      "proposal": "a1",
+      "outcome": "uncertain"
+    }
+  ]
+}

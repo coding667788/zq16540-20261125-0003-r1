@@ -1,0 +1,84 @@
+{
+  "schema": "crashfence.scenario.v1",
+  "name": "abutting coordinator leases and last complete owner token",
+  "initial_clock": 10,
+  "steps": [
+    {
+      "op": "grant_owner_token",
+      "token_id": "ta",
+      "token": {
+        "epoch": 1,
+        "coordinator": "obs-a",
+        "lease_id": "lease-a",
+        "not_before": 0,
+        "expires_at": 10
+      }
+    },
+    {
+      "op": "grant_owner_token",
+      "token_id": "tb",
+      "token": {
+        "epoch": 2,
+        "coordinator": "obs-b",
+        "lease_id": "lease-b",
+        "not_before": 10,
+        "expires_at": 20
+      }
+    },
+    {
+      "op": "persist_owner_token",
+      "node": "n1",
+      "token": "ta",
+      "complete": true
+    },
+    {
+      "op": "persist_owner_token",
+      "node": "n1",
+      "token": "tb",
+      "partial_bytes": 12
+    },
+    {
+      "op": "crash",
+      "node": "n1"
+    },
+    {
+      "op": "restart",
+      "node": "n1"
+    },
+    {
+      "op": "assert",
+      "node": "n1",
+      "recovery_classification": "last_frame_incomplete"
+    },
+    {
+      "op": "request_authorization",
+      "proposal_id": "auth-transition",
+      "auth_id": "auth-transition"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "auth-transition",
+      "node": "n1",
+      "token": "ta",
+      "at": 10,
+      "comment": "old lease expires exactly at boundary 10"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "auth-transition",
+      "node": "n1",
+      "token": "tb",
+      "at": 10
+    },
+    {
+      "op": "persist_owner_token",
+      "node": "n1",
+      "token": "tb",
+      "complete": true
+    },
+    {
+      "op": "restart",
+      "node": "n1"
+    }
+  ]
+}

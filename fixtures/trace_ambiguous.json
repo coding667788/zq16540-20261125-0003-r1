@@ -1,0 +1,50 @@
+{
+  "schema": "crashfence.trace.v1",
+  "name": "missing quorum event creates authorization ambiguity",
+  "max_events": 12,
+  "readers": [],
+  "events": [
+    {
+      "op": "grant_owner_token",
+      "token_id": "t1",
+      "token": {
+        "epoch": 1,
+        "coordinator": "obs-a",
+        "lease_id": "l1",
+        "not_before": 0,
+        "expires_at": 100
+      }
+    },
+    {
+      "op": "request_authorization",
+      "proposal_id": "a1",
+      "auth_id": "auth-amb"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "a1",
+      "node": "n1",
+      "token": "t1"
+    },
+    null,
+    {
+      "op": "publish_commit_marker",
+      "proposal": "a1",
+      "token": "t1"
+    }
+  ],
+  "choices": {
+    "3": [
+      {
+        "op": "write_frame",
+        "proposal": "a1",
+        "node": "n2",
+        "token": "t1"
+      },
+      {
+        "op": "advance_clock",
+        "to": 5
+      }
+    ]
+  }
+}

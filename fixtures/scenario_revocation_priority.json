@@ -1,0 +1,106 @@
+{
+  "schema": "crashfence.scenario.v1",
+  "name": "revocation wins over earlier uncommitted authorization",
+  "readers": [
+    {
+      "id": "r1",
+      "upstream": "up-r1"
+    }
+  ],
+  "steps": [
+    {
+      "op": "grant_owner_token",
+      "token_id": "t1",
+      "token": {
+        "epoch": 1,
+        "coordinator": "obs-a",
+        "lease_id": "lease-1",
+        "not_before": 0,
+        "expires_at": 100
+      }
+    },
+    {
+      "op": "request_authorization",
+      "proposal_id": "auth-1",
+      "auth_id": "auth-1",
+      "conflict_key": "policy-x",
+      "principal": "service-example",
+      "action": "invoke",
+      "resource": "policy-x"
+    },
+    {
+      "op": "request_revocation",
+      "proposal_id": "rev-1",
+      "target_auth_id": "auth-1",
+      "conflict_key": "policy-x"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "auth-1",
+      "node": "n1",
+      "token": "t1"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "auth-1",
+      "node": "n1",
+      "token": "t1",
+      "comment": "same token, same proposal/frame digest: duplicate"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "auth-1",
+      "node": "n2",
+      "token": "t1"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "rev-1",
+      "node": "n2",
+      "token": "t1"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "rev-1",
+      "node": "n3",
+      "token": "t1"
+    },
+    {
+      "op": "publish_commit_marker",
+      "proposal": "rev-1",
+      "token": "t1"
+    },
+    {
+      "op": "publish_commit_marker",
+      "proposal": "auth-1",
+      "token": "t1"
+    },
+    {
+      "op": "publish_read_snapshot",
+      "snapshot_id": "snap-1",
+      "version": 1,
+      "upstream": "up-r1",
+      "confirmation_token": "read-proof-1"
+    },
+    {
+      "op": "reader_read",
+      "reader": "r1",
+      "snapshot_id": "snap-1"
+    },
+    {
+      "op": "grant_read_token",
+      "reader": "r1",
+      "token": "read-proof-1"
+    },
+    {
+      "op": "reader_read",
+      "reader": "r1",
+      "snapshot_id": "snap-1"
+    },
+    {
+      "op": "assert",
+      "authorization_id": "auth-1",
+      "expected_decision": "superseded"
+    }
+  ]
+}

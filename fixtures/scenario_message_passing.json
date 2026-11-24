@@ -1,0 +1,73 @@
+{
+  "schema": "crashfence.scenario.v1",
+  "name": "explicit deterministic message send and duplicate delivery",
+  "steps": [
+    {
+      "op": "grant_owner_token",
+      "token_id": "t1",
+      "token": {
+        "epoch": 1,
+        "coordinator": "obs-a",
+        "lease_id": "l-msg",
+        "not_before": 0,
+        "expires_at": 100
+      }
+    },
+    {
+      "op": "request_authorization",
+      "proposal_id": "a1",
+      "auth_id": "auth-msg"
+    },
+    {
+      "op": "send_message",
+      "id": "m1",
+      "from": "obs-a",
+      "to": "n1",
+      "message": {
+        "type": "append",
+        "step": {
+          "op": "write_frame",
+          "proposal": "a1",
+          "node": "n1",
+          "token": "t1"
+        }
+      }
+    },
+    {
+      "op": "deliver_message",
+      "id": "m1"
+    },
+    {
+      "op": "deliver_message",
+      "id": "m1"
+    },
+    {
+      "op": "send_message",
+      "id": "m2",
+      "from": "obs-a",
+      "to": "n2",
+      "message": {
+        "type": "append",
+        "step": {
+          "op": "write_frame",
+          "proposal": "a1",
+          "node": "n2",
+          "token": "t1"
+        }
+      }
+    },
+    {
+      "op": "deliver_message",
+      "id": "m2"
+    },
+    {
+      "op": "publish_commit_marker",
+      "proposal": "a1",
+      "token": "t1"
+    },
+    {
+      "op": "assert",
+      "committed_version": 1
+    }
+  ]
+}

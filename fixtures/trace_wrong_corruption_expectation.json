@@ -1,0 +1,54 @@
+{
+  "schema": "crashfence.trace.v1",
+  "name": "trace wrongly calls committed corruption a torn tail",
+  "events": [
+    {
+      "op": "grant_owner_token",
+      "token_id": "t1",
+      "token": {
+        "epoch": 1,
+        "coordinator": "obs-a",
+        "lease_id": "l1",
+        "not_before": 0,
+        "expires_at": 100
+      }
+    },
+    {
+      "op": "request_authorization",
+      "proposal_id": "a1",
+      "auth_id": "auth-bad"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "a1",
+      "node": "n1",
+      "token": "t1"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "a1",
+      "node": "n2",
+      "token": "t1"
+    },
+    {
+      "op": "publish_commit_marker",
+      "proposal": "a1",
+      "token": "t1"
+    },
+    {
+      "op": "inject_corruption",
+      "node": "n1",
+      "slot": "s1",
+      "record_index": -1
+    },
+    {
+      "op": "restart",
+      "node": "n1"
+    },
+    {
+      "op": "assert",
+      "node": "n1",
+      "recovery_classification": "last_frame_incomplete"
+    }
+  ]
+}

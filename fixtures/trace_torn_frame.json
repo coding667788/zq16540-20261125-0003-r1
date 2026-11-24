@@ -1,0 +1,42 @@
+{
+  "schema": "crashfence.trace.v1",
+  "name": "last frame prefix is incomplete, not committed corruption",
+  "events": [
+    {
+      "op": "grant_owner_token",
+      "token_id": "t1",
+      "token": {
+        "epoch": 1,
+        "coordinator": "obs-a",
+        "lease_id": "l1",
+        "not_before": 0,
+        "expires_at": 100
+      }
+    },
+    {
+      "op": "request_authorization",
+      "proposal_id": "a1",
+      "auth_id": "auth-torn"
+    },
+    {
+      "op": "write_frame",
+      "proposal": "a1",
+      "node": "n1",
+      "token": "t1",
+      "partial_bytes": 18
+    },
+    {
+      "op": "crash",
+      "node": "n1"
+    },
+    {
+      "op": "restart",
+      "node": "n1"
+    },
+    {
+      "op": "assert",
+      "node": "n1",
+      "recovery_classification": "last_frame_incomplete"
+    }
+  ]
+}

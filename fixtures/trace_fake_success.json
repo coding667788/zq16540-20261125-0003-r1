@@ -1,0 +1,12 @@
+{
+  "schema": "crashfence.trace.v1",
+  "name": "uncertain response cannot be recorded as success",
+  "events": [
+    {
+      "op": "record_response",
+      "correlation_id": "c1",
+      "proposal": "missing-proposal",
+      "outcome": "success"
+    }
+  ]
+}
